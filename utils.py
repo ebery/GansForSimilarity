@@ -5,6 +5,7 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import datasets
 from networks import Generator, Critic
+import numpy as np
 
 
 def __weights_init_normal(m):
