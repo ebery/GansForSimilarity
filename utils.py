@@ -3,9 +3,13 @@ import matplotlib.pyplot as plt
 import torchvision.transforms as transforms
 import torch
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 from torchvision import datasets
 from networks import Generator, Critic
 import numpy as np
+
+
+Tensor = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
 
 
 def __weights_init_normal(m):
@@ -42,10 +46,28 @@ def get_dataloader(data_path, img_size, batch_size):
     return dataloader
 
 
-def plot_losses(mode):
-    g_path = f"Q4 Results/{mode}_losses_g.csv"
-    d_path = f"Q4 Results/{mode}_losses_d.csv"
-    if not os.path.exists:
+def wasserstein_loss(fake_imgs, critic, device, real_imgs=None):
+    gen_loss = -torch.mean(critic(fake_imgs)[0]).to(device)
+    if real_imgs is None:
+        return gen_loss
+    return -(torch.mean(critic(real_imgs)[0])+gen_loss)
+
+
+def adversarial_loss(fake_imgs, critic, real_imgs=None):
+    dcgan_loss = torch.nn.BCELoss()
+    valid = Variable(Tensor(fake_imgs.shape[0]).fill_(1.0), requires_grad=False)
+    if real_imgs is None:
+        gen_cost = dcgan_loss(critic(fake_imgs)[0], valid)
+        return gen_cost
+    fake = Variable(Tensor(fake_imgs.shape[0]).fill_(0.0), requires_grad=False)
+    critic_cost = dcgan_loss(critic(fake_imgs.detach())[0], fake) + dcgan_loss(critic(real_imgs)[0], valid)
+    return critic_cost / 2
+
+
+def plot_losses(results_dir, mode):
+    g_path = os.path.join(results_dir, f"{mode}_losses_g.csv")
+    d_path = os.path.join(results_dir, f"{mode}_losses_d.csv")
+    if not os.path.exists(g_path):
         print(f"{mode} model is not trained yet. Please run training models section first")
         return
     g_losses, d_losses = np.genfromtxt(g_path), np.genfromtxt(d_path)
@@ -56,4 +78,19 @@ def plot_losses(mode):
     plt.title(f"{mode} loss vs iterations")
     plt.legend(["G", "D"])
     plt.grid(True)
-    plt.savefig(f"Q4 Results/{mode}_loss.png")
+    plt.savefig(os.path.join(results_dir, f"{mode}_loss.png"))
+
+
+def create_dirs(dirs_path_list):
+    for dir in dirs_path_list:
+        os.makedirs(dir, exist_ok=True)
+
+
+def get_optimizers(generator, critic, mode, dcgan_lr, wgan_lr, betas=None):
+    if mode == 'wgan':
+        optimizer_G = torch.optim.RMSprop(generator.parameters(), lr=wgan_lr)
+        optimizer_D = torch.optim.RMSprop(critic.parameters(), lr=wgan_lr)
+    else:
+        optimizer_G = torch.optim.Adam(generator.parameters(), lr=dcgan_lr, betas=betas)
+        optimizer_D = torch.optim.Adam(critic.parameters(), lr=dcgan_lr, betas=betas)
+    return optimizer_G, optimizer_D
