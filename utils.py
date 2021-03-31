@@ -53,15 +53,15 @@ def wasserstein_loss(fake_imgs, critic, device, real_imgs=None):
     return -(torch.mean(critic(real_imgs)[0])+gen_loss)
 
 
-def adversarial_loss(fake_imgs, critic, real_imgs=None):
+def adversarial_loss(fake_imgs, critic, device, real_imgs=None):
     dcgan_loss = torch.nn.BCELoss()
     valid = Variable(Tensor(fake_imgs.shape[0]).fill_(1.0), requires_grad=False)
     if real_imgs is None:
         gen_cost = dcgan_loss(critic(fake_imgs)[0], valid)
-        return gen_cost
+        return gen_cost.to(device)
     fake = Variable(Tensor(fake_imgs.shape[0]).fill_(0.0), requires_grad=False)
     critic_cost = dcgan_loss(critic(fake_imgs.detach())[0], fake) + dcgan_loss(critic(real_imgs)[0], valid)
-    return critic_cost / 2
+    return critic_cost.to(device) / 2
 
 
 def plot_losses(results_dir, mode):

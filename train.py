@@ -59,7 +59,7 @@ def train(generator, critic, criterion, optimizer_G, optimizer_D, dataloader, mo
             # Generate a batch of images
             real_imgs = Variable(real_batch[0].type(Tensor))
             fake_imgs = generator(z).detach()
-            loss_D = criterion(fake_imgs, critic, real_imgs)
+            loss_D = criterion(fake_imgs, critic, device, real_imgs)
             loss_D.backward()
             optimizer_D.step()
 
@@ -76,7 +76,7 @@ def train(generator, critic, criterion, optimizer_G, optimizer_D, dataloader, mo
 
         # Generate a batch of images
         gen_imgs = generator(z)
-        loss_G = criterion(gen_imgs, critic)
+        loss_G = criterion(gen_imgs, critic, device)
         loss_G.backward()
         optimizer_G.step()
         if i % 100 == 0:
@@ -112,3 +112,5 @@ def train_and_save_model(dataloader, mode):
 
 if __name__ == '__main__':
     train_and_save_model(get_dataloader(args.data_path, IMG_SIZE, args.batch_size), args.gan_type)
+    plot_losses(args.results_path, args.gan_type)
+    plt.show()
