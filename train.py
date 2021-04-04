@@ -3,7 +3,7 @@ from torchvision.utils import save_image
 
 from utils import *
 
-parser = argparse.ArgumentParser(description='RGB denoising evaluation on the validation set of SIDD')
+parser = argparse.ArgumentParser(description='GAN training on FashionMNIST dataset.')
 parser.add_argument('--data_path', default='data/mnist/', type=str, help='Directory of the dataset')
 parser.add_argument('--results_path', default='results/', type=str, help='Results directory')
 parser.add_argument('--pretrained_models_path', default='pretrained_models',
@@ -20,7 +20,7 @@ parser.add_argument('--gan_type', default='dcgan', type=str, choices=['wgan', 'd
 args = parser.parse_args()
 
 GENERATED_IMAGES_PATH = os.path.join(args.results_path, "Generated Images/{0}/")
-MODELS_PATH = os.path.join(args.pretrained_models_path, "Models/{0}/")
+MODELS_PATH = os.path.join(args.pretrained_models_path, "{0}/")
 IMAGES_PATH = os.path.join(args.results_path, "images/{0}/")
 DIM = 64  # Model dimensionality
 IMG_SIZE = 32

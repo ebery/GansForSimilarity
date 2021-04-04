@@ -30,13 +30,13 @@ def get_models(mode, latent_dim, model_dim, device, init=True):
     return generator, critic
 
 
-def get_dataloader(data_path, img_size, batch_size):
+def get_dataloader(data_path, img_size, batch_size, train=True):
     os.makedirs(data_path, exist_ok=True)
     transforms_list = [transforms.Resize(img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]
     dataloader = torch.utils.data.DataLoader(
         datasets.FashionMNIST(
             data_path,
-            train=True,
+            train=train,
             download=True,
             transform=transforms.Compose(transforms_list),
         ),
