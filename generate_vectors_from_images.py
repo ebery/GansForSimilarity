@@ -11,6 +11,7 @@ parser.add_argument('--pretrained_models_path', default='pretrained_models',
                     type=str, help='Directory for trained models')
 parser.add_argument('--batch_size', default=64, type=int, help='batch_size')
 parser.add_argument('--gan_type', default='dcgan', type=str, choices=['wgan', 'dcgan'], help="dcgan or wgan")
+parser.add_argument('--output_dim', default=100, type=int, help='dimensions of output feature vector')
 args = parser.parse_args()
 
 
@@ -35,7 +36,7 @@ def generate_feature_vectors(critic: Critic, train=True):
     return np.vstack(feature_vectors), np.hstack(labels)
 
 
-critic = Critic(args.gan_type, DIM).to(device)
+critic = Critic(args.gan_type, DIM, args.output_dim).to(device)
 critic.load_state_dict(torch.load(MODEL_PATH))
 critic.eval()
 train_feature_vectors, train_labels = generate_feature_vectors(critic)

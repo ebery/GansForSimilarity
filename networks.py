@@ -34,7 +34,7 @@ class Generator(nn.Module):
 
 
 class Critic(nn.Module):
-    def __init__(self, mode, model_dim):
+    def __init__(self, mode, model_dim, output_dim):
         super(Critic, self).__init__()
 
         self.model_dim = model_dim
@@ -49,8 +49,8 @@ class Critic(nn.Module):
         self.model_body = nn.Sequential(*block(1, self.model_dim, normalize=False),
                                         *block(self.model_dim, 2*self.model_dim),
                                         *block(2*self.model_dim, 4*self.model_dim))
-        self.linear = nn.Linear(4*4*4*self.model_dim, 100)
-        self.model_tail = nn.Sequential(nn.Dropout(0.5), nn.Linear(100, 1))
+        self.linear = nn.Linear(4*4*4*self.model_dim, output_dim)
+        self.model_tail = nn.Sequential(nn.Dropout(0.5), nn.Linear(output_dim, 1))
         self.sigmoid = nn.Sigmoid()
         self.mode = mode
 

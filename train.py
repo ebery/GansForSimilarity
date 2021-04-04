@@ -17,6 +17,7 @@ parser.add_argument('--clip_value', default=1e-2, type=float, help='weights clip
 parser.add_argument('--b1', default=0.5, type=float, help='betta1 for ADAM optimizer')
 parser.add_argument('--b2', default=0.999, type=float, help='betta2 for ADAM optimizer')
 parser.add_argument('--gan_type', default='dcgan', type=str, choices=['wgan', 'dcgan'], help="dcgan or wgan")
+parser.add_argument('--output_dim', default=100, type=int, help='dimensions of output feature vector')
 args = parser.parse_args()
 
 GENERATED_IMAGES_PATH = os.path.join(args.results_path, "Generated Images/{0}/")
@@ -101,7 +102,8 @@ def train(generator, critic, criterion, optimizer_G, optimizer_D, dataloader, mo
 
 def train_and_save_model(dataloader, mode):
     # Initialize generator and critic
-    generator, critic = get_models(mode, latent_dim=args.latent_dim, model_dim=DIM, device=device, init=True)
+    generator, critic = get_models(mode, latent_dim=args.latent_dim, model_dim=DIM, device=device,
+                                   output_dim=args.output_dim, init=True)
     criterion = adversarial_loss if mode == 'dcgan' else wasserstein_loss
     # Optimizers
     optimizer_G, optimizer_D = get_optimizers(generator, critic, mode, args.dcgan_lr, args.wgan_lr, (args.b1, args.b2))
