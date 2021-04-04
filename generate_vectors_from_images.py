@@ -42,11 +42,11 @@ train_feature_vectors, train_labels = generate_feature_vectors(critic)
 test_feature_vectors, test_labels = generate_feature_vectors(critic, False)
 os.makedirs(NEW_DATASET_PATH, exist_ok=True)
 new_train_dataset = {
-    'feature_vectors': train_feature_vectors,
+    'data': train_feature_vectors,
     'labels': train_labels
 }
 new_test_dataset = {
-    'feature_vectors': test_feature_vectors,
+    'data': test_feature_vectors,
     'labels': test_labels
 }
 torch.save(new_train_dataset, os.path.join(NEW_DATASET_PATH, "training.pt"))
