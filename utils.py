@@ -21,9 +21,9 @@ def __weights_init_normal(m):
         torch.nn.init.constant_(m.bias.data, 0.0)
 
 
-def get_models(mode, latent_dim, model_dim, device, init=True):
+def get_models(mode, latent_dim, model_dim, device, output_dim, init=True):
     generator = Generator(latent_dim, model_dim).to(device)
-    critic = Critic(mode, model_dim).to(device)
+    critic = Critic(mode, model_dim, output_dim).to(device)
     if init:
         generator.apply(__weights_init_normal)
         critic.apply(__weights_init_normal)
