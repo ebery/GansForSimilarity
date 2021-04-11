@@ -30,6 +30,13 @@ def get_models(mode, latent_dim, model_dim, device, output_dim, init=True):
     return generator, critic
 
 
+def sample_spherical_distribution(num_samples, latent_dim, r):
+    samples = Variable(Tensor(np.random.normal(0, 1, (num_samples, latent_dim))))
+    d = torch.norm(samples, dim=1, keepdim=True)
+    samples = (samples * r) / d
+    return samples
+
+
 def get_dataloader(data_path, img_size, batch_size, train=True):
     os.makedirs(data_path, exist_ok=True)
     transforms_list = [transforms.Resize(img_size), transforms.ToTensor(), transforms.Normalize([0.5], [0.5])]

@@ -18,6 +18,7 @@ parser.add_argument('--b1', default=0.5, type=float, help='betta1 for ADAM optim
 parser.add_argument('--b2', default=0.999, type=float, help='betta2 for ADAM optimizer')
 parser.add_argument('--gan_type', default='dcgan', type=str, choices=['wgan', 'dcgan'], help="dcgan or wgan")
 parser.add_argument('--output_dim', default=100, type=int, help='dimensions of output feature vector')
+parser.add_argument('--r', default=1, type=float, help="Radius of spherical distribution")
 args = parser.parse_args()
 
 GENERATED_IMAGES_PATH = os.path.join(args.results_path, "Generated Images/{0}/")
@@ -53,7 +54,7 @@ def train(generator, critic, criterion, optimizer_G, optimizer_D, dataloader, mo
             # ---------------------
 
             # Sample noise as generator input
-            z = Variable(Tensor(np.random.normal(0, 1, (real_batch[0].shape[0], args.latent_dim))))
+            z = sample_spherical_distribution(real_batch[0].shape[0], args.latent_dim, args.r)
 
             optimizer_D.zero_grad()
 
