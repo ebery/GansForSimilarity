@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+results
+pretrained_models
+
 # Distribution / packaging
 .Python
 .idea/
